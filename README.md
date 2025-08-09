@@ -6,22 +6,22 @@ A comprehensive toolkit for processing and analyzing drone survey data, includin
 
 **Eric Tannant**
 Originally created: 2023
-Updated: July 2025
-Version: 1.1
+Updated: August 2025
+Version: 1.2
 License: MIT
 
 ## Overview
 
-This project contains four specialized modules for drone data processing:
+This project contains specialized modules for drone data processing:
 
 1. **Camera Position Calculator** - Correlates drone images with GPS coordinates
-2. **DXF Point Reader** - Extracts 3D coordinates from CAD files
-3. **Geological Plane Analysis** - Calculates dip and dip direction from 3-point data
-4. **RINEX OBS File Corrector** - Fixes formatting issues in GPS observation files
+2. **DXF Vertex Reader** - Advanced 3D vertex extraction with geological analysis and variance calculations
+3. **RINEX OBS File Corrector** - Fixes formatting issues in GPS observation files
+4. **Legacy Scripts** - Previous versions now largely obsolette (DXF point reader, Pix4D analysis)
 
 ## Modules
 
-### 1. Camera Position Calculator (`CameraPosCalculator.py`)
+### 1. Camera Position Calculator (`camera_pos_calculator.py`)
 
 Calculates accurate camera positions for drone images by correlating timestamp data with RINEX GPS positioning data.
 
@@ -41,67 +41,45 @@ Calculates accurate camera positions for drone images by correlating timestamp d
 
 **Output:**
 
-- `Camera_coords.txt` - CSV file with image names and corrected coordinates
+- `Camera_coords.csv` - CSV file with image names and corrected coordinates
 
 **Usage:**
 
 ```bash
-python CameraPosCalculator.py
+python camera_pos_calculator.py
 ```
 
-### 2. DXF Point Reader (`DXF-File-Point-Reader.py`)
+### 2. DXF Vertex Reader (`dxf_vertex_reader.py`)
 
-Extracts 3D point coordinates from DXF (Drawing Exchange Format) files.
+Advanced DXF file processor that extracts 3D vertex coordinates from polylines with geological analysis capabilities.
 
 **Features:**
 
-- GUI file selection dialog
-- Extracts all POINT entities from DXF files
-- Formatted output with point numbering
-- Error handling for corrupt or invalid files
+- Processes DXF VERTEX entities from polylines
+- Removes duplicate vertices within polylines
+- Filters to only process 3-vertex triangular faces
+- Calculates geological dip and dip direction angles
+- Computes triangle area measurements
+- Advanced variance analysis using ±0.05 coordinate perturbations
+- CSV output with natural sorting and precision control
+- Comprehensive error handling and validation
 
 **Requirements:**
 
-- DXF file with POINT entities
-- Python packages: `tkinter`
-
-**Output:**
-
-- Text file with extracted coordinates in X, Y, Z format
-
-**Usage:**
-
-```bash
-python DXF-File-Point-Reader.py
-```
-
-### 3. Geological Plane Analysis (`Pix4D-3-pt-face_Dip&DipDir.py`)
-
-Calculates geological dip and dip direction from three-point plane data extracted from Pix4D DXF files.
-
-**Features:**
-
-- Object-oriented design with Point3D and GeologicalPlane classes
-- Automatic calculation of dip, dip direction, and triangle area
-- Proper handling of normal vector orientation
-- CSV output with comprehensive data
-
-**Requirements:**
-
-- DXF file with grouped sets of 3 points defining geological planes
+- DXF file with VERTEX entities in polylines
 - Python packages: `numpy`, `tkinter`
 
 **Output:**
 
-- CSV file with point coordinates, dip, dip direction, and area measurements
+- CSV file with vertex coordinates and geological analysis (dip, dip direction, area, variance)
 
 **Usage:**
 
 ```bash
-python Pix4D-3-pt-face_Dip&DipDir.py
+python dxf_vertex_reader.py
 ```
 
-### 4. RINEX OBS File Corrector (`RINEX-OBS-File-Corrector.py`)
+### 3. RINEX OBS File Corrector (`rinex_obs_file_corrector.py`)
 
 Corrects and reformats RINEX observation files to ensure proper formatting and RINEX standard compliance.
 
@@ -119,15 +97,67 @@ Corrects and reformats RINEX observation files to ensure proper formatting and R
 
 **Output:**
 
-- Corrected files with `_corrected.txt` suffix
+- Corrected files with `_corrected.obs` suffix
 
 **Usage:**
 
 ```bash
-python RINEX-OBS-File-Corrector.py
+python rinex_obs_file_corrector.py
+```
+
+## Legacy Scripts (Old-Scripts/)
+
+The `Old-Scripts/` directory contains previous versions of tools maintained for compatibility:
+
+### DXF Point Reader (`dxf_file_point_reader.py`)
+
+Legacy version that extracts 3D point coordinates from DXF POINT entities.
+
+**Features:**
+
+- Extracts all POINT entities from DXF files
+- Simple coordinate extraction without geological analysis
+- Formatted text output with point numbering
+
+**Usage:**
+
+```bash
+python Old-Scripts/dxf_file_point_reader.py
+```
+
+### Pix4D Geological Analysis (`pix4d_3pt_face_dip_dipdir.py`)
+
+Legacy geological analysis tool for Pix4D-generated DXF files.
+
+**Features:**
+
+- Processes grouped 3-point sets from Pix4D
+- Basic dip and dip direction calculations
+- Triangle area measurements
+
+**Usage:**
+
+```bash
+python Old-Scripts/pix4d_3pt_face_dip_dipdir.py
 ```
 
 ## Installation
+
+### Quick Start
+
+For users who want to get started immediately:
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd drone-data-parser
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run any script
+python dxf_vertex_reader.py
+```
 
 ### Prerequisites
 
@@ -175,14 +205,10 @@ python RINEX-OBS-File-Corrector.py
 
 4. **Install required packages**
 
-   ```bash
-   pip install pandas numpy
-   ```
-
-5. **Verify installation**
+   **Option A: Using requirements.txt (recommended)**
 
    ```bash
-   python -c "import pandas, numpy; print('All packages installed successfully!')"
+   pip install -r requirements.txt
    ```
 
 ### Running the Scripts
@@ -190,71 +216,89 @@ python RINEX-OBS-File-Corrector.py
 Once the virtual environment is activated and packages are installed, you can run any of the scripts:
 
 ```bash
-python CameraPosCalculator.py
-python DXF-File-Point-Reader.py
-python Pix4D-3-pt-face_Dip&DipDir.py
-python RINEX-OBS-File-Corrector.py
-```
+python camera_pos_calculator.py
+python dxf_vertex_reader.py
+python rinex_obs_file_corrector.py
 
-### Deactivating the Virtual Environment
-
-When you're done working with the project, deactivate the virtual environment:
-
-```bash
-deactivate
-```
-
-### Alternative: Requirements File
-
-For easier dependency management, you can create a `requirements.txt` file:
-
-```bash
-# Create requirements.txt
-echo "pandas>=1.3.0" > requirements.txt
-echo "numpy>=1.20.0" >> requirements.txt
-
-# Install from requirements file
-pip install -r requirements.txt
+# Legacy scripts
+python Old-Scripts/dxf_file_point_reader.py
+python Old-Scripts/pix4d_3pt_face_dip_dipdir.py
 ```
 
 ## File Structure
 
-```
+```bash
 drone-data-parser/
-├── CameraPosCalculator.py              # Camera position calculator
-├── DXF-File-Point-Reader.py            # DXF coordinate extractor
-├── Pix4D-3-pt-face_Dip&DipDir.py       # Geological analysis
-├── RINEX-OBS-File-Corrector.py         # RINEX file corrector
-└── README.md                           # This documentation
+├── camera_pos_calculator.py             # Camera position calculator
+├── dxf_vertex_reader.py                 # Advanced DXF vertex reader with geological analysis
+├── rinex_obs_file_corrector.py          # RINEX file corrector
+├── requirements.txt                     # Python dependencies
+├── Old-Scripts/                         # Legacy scripts directory
+│   ├── dxf_file_point_reader.py         # Legacy DXF point extractor
+│   └── pix4d_3pt_face_dip_dipdir.py     # Legacy Pix4D geological analysis
+└── README.md                            # This documentation
 ```
 
 ## Data Flow Examples
 
 ### Camera Position Processing
 
-```
+```bash
 Image Files (*.jpg) + RINEX Data (*.pos) + Timestamps (*.MRK)
-    → Camera_coords.txt
+    → Camera_coords.csv
 ```
 
-### Geological Analysis
+### DXF Vertex Reader
 
-```
-DXF File (3-point sets) → Geological measurements → CSV report
+```bash
+DXF File (VERTEX polylines) → 3-vertex filtering → Duplicate removal
+    → Geological calculations (dip, dip direction, area)
+    → Variance analysis (±0.05 coordinate perturbations)
+    → CSV report with geological measurements
 ```
 
 ### RINEX Correction
 
+```bash
+Raw OBS files (*.obs) → Formatted files (*_corrected.obs)
 ```
-Raw OBS files (*.obs) → Formatted files (*_corrected.txt)
+
+### Legacy DXF Point Extraction (Superseded by DXF Vertex Reader)
+
+```bash
+DXF File (POINT entities) → Coordinate extraction → Text report
 ```
 
 ## Troubleshooting
 
-### Common Issues
+### Installation Issues
+
+1. **Python version errors**: Ensure you're using Python 3.10 or higher
+
+   ```bash
+   python --version
+   ```
+
+2. **Pip not found**: Make sure pip is installed and updated
+
+   ```bash
+   python -m ensurepip --upgrade
+   python -m pip install --upgrade pip
+   ```
+
+3. **Virtual environment issues**: Recreate the virtual environment
+
+   ```bash
+   deactivate  # if already in a venv
+   rm -rf drone-parser-env  # remove old environment
+   python -m venv drone-parser-env
+   # Reactivate and install
+   ```
+
+### Runtime Issues
 
 1. **No files found**: Ensure input files are in the correct directory
-2. **Import errors**: Install required packages with pip
+2. **Import errors**: Verify all packages are installed correctly with `pip list`
 3. **File format errors**: Verify input files follow expected formats
 4. **Permission errors**: Ensure write permissions in output directory
 

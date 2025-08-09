@@ -1,14 +1,15 @@
 # Drone Data Parser
 
-A comprehensive toolkit for processing and analyzing drone survey data, including camera positioning, geological measurements, and RINEX observation file correction.
+Python scripts for processing and analyzing DJI drone survey data
 
 ## Author
 
 **Eric Tannant**
-Originally created: 2023
-Updated: August 2025
-Version: 1.2
-License: MIT
+
+- Originally created: 2021
+- Last Updated: August 2025
+- Version: 1.6
+- License: MIT
 
 ## Overview
 
@@ -27,10 +28,9 @@ Calculates accurate camera positions for drone images by correlating timestamp d
 
 **Features:**
 
-- Processes JPG/jpg files with structured naming convention
+- Processes jpg files
 - Interpolates GPS positions based on image timestamps
 - Applies offset corrections for precise positioning
-- Handles day boundary crossings in GPS data
 
 **Requirements:**
 
@@ -318,4 +318,4 @@ This project is maintained by Eric Tannant. For issues or improvements:
 
 ## License
 
-MIT License - see individual file headers for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

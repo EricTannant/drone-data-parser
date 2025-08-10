@@ -1,6 +1,6 @@
 # Drone Data Parser
 
-Python scripts for processing and analyzing DJI drone survey data
+Python scripts for processing and analyzing DJI drone and 3D survey data
 
 ## Author
 
@@ -233,10 +233,12 @@ drone-data-parser/
 ├── dxf_vertex_reader.py                 # Advanced DXF vertex reader with geological analysis
 ├── rinex_obs_file_corrector.py          # RINEX file corrector
 ├── requirements.txt                     # Python dependencies
-├── Old-Scripts/                         # Legacy scripts directory
-│   ├── dxf_file_point_reader.py         # Legacy DXF point extractor
-│   └── pix4d_3pt_face_dip_dipdir.py     # Legacy Pix4D geological analysis
-└── README.md                            # This documentation
+├── LICENSE                              # MIT License
+├── README.md                            # This documentation
+└── Old-Scripts/                         # Legacy scripts directory
+    ├── dxf_file_point_reader.py         # Legacy DXF point extractor
+    └── pix4d_3pt_face_dip_dipdir.py     # Legacy Pix4D geological analysis
+
 ```
 
 ## Data Flow Examples

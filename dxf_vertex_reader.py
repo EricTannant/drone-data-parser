@@ -174,7 +174,7 @@ class Polyline:
                                                      dx2, dy2, dz2, dx3, dy3, dz3)
             
             # Calculate properties for varied points
-            dip, dip_direction, _ = self._calculate_properties_for_points(*varied_points)
+            dip, dip_direction, _, _ = self._calculate_properties_for_points(*varied_points)
             
             if dip > 0:  # Valid calculation
                 dip_values.append(dip)

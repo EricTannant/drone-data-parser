@@ -80,6 +80,7 @@ class Polyline:
         self.dip = 0.0
         self.dip_direction = 0.0
         self.area = 0.0
+        self.length_sum = 0.0
         self.dip_variance = 0.0
         self.dip_direction_variance = 0.0
 
@@ -112,7 +113,7 @@ class Polyline:
         p1, p2, p3 = self.vertices[0], self.vertices[1], self.vertices[2]
 
         # Calculate main geological properties
-        self.dip, self.dip_direction, self.area = self._calculate_properties_for_points(p1, p2, p3)
+        self.dip, self.dip_direction, self.area, self.length_sum = self._calculate_properties_for_points(p1, p2, p3)
 
         # Calculate variance using ±0.005 variations
         self._calculate_variance()
@@ -128,6 +129,7 @@ class Polyline:
 
         # Calculate area of triangle
         triangle_area = self._magnitude(cross_product) / 2.0
+        length_sum = self._magnitude(vector_a) + self._magnitude(vector_b)
 
         # Calculate unit normal vector
         if triangle_area > 0:
@@ -143,9 +145,9 @@ class Polyline:
             # Calculate dip direction (azimuth)
             dip_direction = self._calculate_dip_direction(unit_normal[0], unit_normal[1])
 
-            return dip, dip_direction, triangle_area
+            return dip, dip_direction, triangle_area, length_sum
 
-        return 0.0, 0.0, 0.0
+        return 0.0, 0.0, 0.0, 0.0
 
     def _calculate_variance(self):
         """Calculate variance in dip and dip direction using ±0.005 coordinate variations."""
@@ -232,21 +234,15 @@ class Polyline:
 
     @staticmethod
     def _calculate_dip_direction(normal_x: float, normal_y: float) -> float:
-        """Calculate dip direction from normal vector components."""
-        if normal_x > 0 and normal_y > 0:
-            return math.degrees(math.atan(normal_x / normal_y))
-        elif normal_x < 0 and normal_y < 0:
-            return 180.0 + math.degrees(math.atan(normal_x / normal_y))
-        elif normal_x > 0 and normal_y < 0:
-            return 180.0 + math.degrees(math.atan(normal_x / normal_y))
-        elif normal_x < 0 and normal_y > 0:
-            return 360.0 + math.degrees(math.atan(normal_x / normal_y))
-        elif normal_x == 0:
-            return 0.0 if normal_y > 0 else 180.0
-        elif normal_y == 0:
-            return 90.0 if normal_x > 0 else 270.0
-        else:
-            return 0.0
+        """Calculate dip direction from normal vector components.
+        
+        Returns azimuth in degrees from 0-360 degrees, where:
+        - North = 0°
+        - East = 90°
+        - South = 180°
+        - West = 270°
+        """
+        return (math.degrees(math.atan2(normal_x, normal_y))) % 360.0
 
     def __str__(self):
         return f"Polyline {self.name}: {len(self.vertices)} vertices"
@@ -485,12 +481,12 @@ def write_polylines_to_file(polylines: Dict[str, Polyline], output_path: str, so
             output_file.write("\n")
 
             # Write geological analysis section
-            output_file.write("Polyline,Dip,Dip_Direction,Area,Dip_Variance,Dip_Direction_Variance\n")
+            output_file.write("Polyline,Dip,Dip_Direction,Area,Trace,Dip_Variance,Dip_Direction_Variance\n")
 
             for polyline_name, polyline in sorted_polylines:
                 output_file.write(
                     f"{polyline_name},{polyline.dip:.1f},{polyline.dip_direction:.1f},{polyline.area:.2f},"
-                    f"{polyline.dip_variance:.1f},{polyline.dip_direction_variance:.1f}\n"
+                    f"{polyline.length_sum:.2f},{polyline.dip_variance:.1f},{polyline.dip_direction_variance:.1f}\n"
                 )
 
         return True
